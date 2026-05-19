@@ -1,0 +1,15 @@
+{
+  "repo": "brain-tumor-mri-ai-system",
+  "title": "Brain Tumor MRI AI System",
+  "category": "Medical-AI-Projects",
+  "description": "A medical computer vision project for brain tumor MRI classification, API inference, segmentation experiments, and simple UI prototypes.",
+  "topics": [
+    "medical-ai",
+    "deep-learning",
+    "computer-vision",
+    "tensorflow",
+    "keras",
+    "pytorch",
+    "fastapi"
+  ]
+}
