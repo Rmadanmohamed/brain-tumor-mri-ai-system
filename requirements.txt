@@ -1,14 +1,4 @@
-fastapi
 gradio
-keras
-matplotlib
-numpy
-opencv-python
-pandas
-pillow
-scikit-learn
-seaborn
 tensorflow
-torch
-torchvision
-uvicorn
+numpy
+pillow
