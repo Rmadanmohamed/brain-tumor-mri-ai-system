@@ -1,7 +1,15 @@
+---
+title: NeuroScope MRI Classifier
+emoji: 🧠
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+---
 # Brain Tumor MRI AI System
 
 ## Overview
-Brain Tumor MRI AI System is a medical computer vision portfolio project for brain MRI classification experiments, API inference notebooks, segmentation experiments, and a Gradio demo app.
+Brain Tumor MRI AI System is a medical computer vision portfolio project for brain MRI classification experiments, API inference notebooks, segmentation experiments, and a same origin web workspace with a preserved Gradio demo.
 
 > This project is for educational and portfolio demonstration only. It is not a medical diagnosis tool and should not be used for clinical decisions.
 
@@ -10,7 +18,7 @@ Brain MRI research workflows often live only in notebooks. This repository keeps
 
 ## Features
 - MRI image classification workflow
-- Gradio demo app in `app.py`
+- Responsive scan workspace in `web/`, served by `app.py` and `web_server.py`
 - FastAPI inference prototype retained in notebook form
 - Segmentation experiment notebook
 - Saved Keras model artifact at `source/Image_Detection_Model.h5`
@@ -28,9 +36,8 @@ Brain MRI research workflows often live only in notebooks. This repository keeps
 - Jupyter Notebook
 
 ## Live Demo
-Live demo: Not available yet.
 
-Reason: The Gradio app has been prepared for Hugging Face Spaces, but local verification found that the bundled `source/Image_Detection_Model.h5` model does not load successfully with the current TensorFlow/Keras environment. The app handles this safely by showing a model-unavailable message instead of producing fake predictions.
+Run the verified local demo at `http://127.0.0.1:7860`. The model loads once at startup. The app has no public deployment.
 
 ## Medical Disclaimer
 This project is for educational and portfolio demonstration only. It is not a medical diagnosis tool and should not be used for clinical decisions. The repository does not include independently verified clinical validation results.
@@ -56,27 +63,30 @@ The notebooks include classification reports, confusion-matrix code, training ac
 
 ## How to Run Locally
 
-```bash
-git clone https://github.com/Rmadanmohamed/brain-tumor-mri-ai-system.git
-cd brain-tumor-mri-ai-system
-python -m venv .venv
-pip install -r requirements.txt
-python app.py
+Use 64-bit CPython 3.12 on Windows. The verified interpreter was 3.12.4. From PowerShell, create an environment if needed and invoke that environment explicitly.
+
+```powershell
+Set-Location 'D:\projects\brain-tumor-mri-ai-system'
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip check
+.\.venv\Scripts\python.exe app.py
 ```
 
-The app expects the model file at:
+For an existing installation, run the final command. Use Ctrl+C in the launch terminal to stop the server. If port 7860 is occupied, identify the owner with `netstat -ano | findstr :7860`. The optional `GRADIO_SERVER_PORT` environment variable selects another local port.
 
-```text
-source/Image_Detection_Model.h5
+Upload a non-sensitive raster image such as JPEG or PNG. The classifier converts it to RGB, resizes it to 224 by 224 with nearest-neighbor interpolation, and rescales float32 pixels by 1/255, following the training generator. The four softmax positions are glioma, meningioma, no tumor, and pituitary. Unrelated images also receive probabilities.
+
+The app reads `source/Image_Detection_Model.h5` relative to the module. Keras 3.8.0 wrote the nested MobileNet endpoints as singleton lists. The loader restores the scalar endpoint references in memory before building the stored graph and reading its weights. The original HDF5 file is the only trained artifact needed. If initialization fails, consult the local server traceback, check the model path and dependencies, then restart. The prediction control is disabled on initialization failure.
+
+Run the regression suite in a second PowerShell window from the project root.
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe tools\validate_demo.py
 ```
 
-If TensorFlow or the model cannot be loaded, the app will show a clear error instead of silently producing a fake prediction.
-
-Current local model-load result:
-
-```text
-Could not load model: Layer "dense" expects 1 input(s), but it received 2 input tensors.
-```
+The second command requires a running server and local JPEGs under `dataset/Testing/<class>` or an explicit `--sample PATH`. It compares direct and served scores and exercises failed uploads. To reproduce the historical failure with the pinned reader, run `tools\diagnose_model.py` using the same interpreter. Its final native HDF5 load intentionally raises the original exception.
 
 ## Project Structure
 
@@ -95,13 +105,14 @@ brain-tumor-mri-ai-system/
 ```
 
 ## Recommended Deployment
-Hugging Face Spaces with Gradio is the best target for this project after the model artifact is repaired or re-exported. Until then, keep the project as GitHub + notebook documentation only and do not publish a prediction demo.
+
+Local validation covers the web API and preserved Gradio classification entry point. The historical notebooks retain their original dependencies and execution assumptions.
 
 ## Limitations
 - Not validated for clinical use.
 - Full dataset packaging and reproducible train/test split are not included.
 - Model performance must be rerun and documented before any accuracy claim is made.
-- The current saved `.h5` artifact fails to load in the tested TensorFlow/Keras environment and should be re-exported from the original training notebook.
+- The historical Gradio notebook reverses the final two display labels. Use the verified mapping in the local app. The API and segmentation notebooks are historical experiments.
 - Free deployment may be limited by TensorFlow package size and memory.
 
 ## Author
@@ -110,3 +121,20 @@ Ramadan Mohamed Hassan
 - GitHub: https://github.com/Rmadanmohamed
 - LinkedIn: https://www.linkedin.com/in/ramadan-mohamed-657686365
 - Portfolio: https://ramadan-ai-portfolio.vercel.app
+
+
+## Web workspace and Windows launch
+
+Double click START_APP.bat. It checks the project environment, waits for the model, and opens http://127.0.0.1:7860/. An existing healthy instance is reused. The original Gradio interface remains at /classic locally.
+
+The HTML, CSS, and JavaScript workspace is served from the same Python process as /api/predict. PNG or JPEG uploads are decoded in memory. Requests are limited to 10 MiB and 16 million pixels. The page shows the four actual model probabilities. Opening web/index.html directly redirects to the running local service.
+
+## Deployment preparation
+
+The Dockerfile configures a Hugging Face Docker Space on port 7860 using Python 3.12. It installs requirements-space.txt and copies only the application, web assets, and original HDF5 model. The public container disables /classic to avoid its upload cache. The .dockerignore excludes local datasets, archives, logs, research files, and virtual environments. Paths are portable and MRI_HOST binds the public container.
+
+The Docker image and public Space have not been built or launched here. Verify permission to distribute the trained model and generated illustration before publishing. Deployment awaits local acceptance and explicit approval.
+
+## Motion experience
+
+The frontend uses CSS and browser animation APIs for the entrance, hero image study, scan accents, navigation, scroll progress, process drawing, and results. The preview scanner runs only while the actual inference request is active. Probability bars and counts animate only toward the four returned model values. Reduced motion preferences disable decorative movement and show final values immediately. The illustration is a decorative rendering and is labeled accordingly.

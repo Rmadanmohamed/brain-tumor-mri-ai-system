@@ -33,3 +33,7 @@ tmp_*
 
 # Large local artifacts
 # Add specific large local files here if needed.
+dataset/
+dataset.zip
+web/assets/*.tmp
+tmp_large.png
