@@ -8,6 +8,8 @@ app_port: 7860
 ---
 # Brain Tumor MRI AI System
 
+[🚀 **Live Demo — Open NeuroScope**](https://rmadanmohamed.github.io/brain-tumor-mri-ai-system/)
+
 ## Overview
 Brain Tumor MRI AI System is a medical computer vision portfolio project for brain MRI classification experiments, API inference notebooks, segmentation experiments, and a same origin web workspace with a preserved Gradio demo.
 
@@ -37,7 +39,9 @@ Brain MRI research workflows often live only in notebooks. This repository keeps
 
 ## Live Demo
 
-Run the verified local demo at `http://127.0.0.1:7860`. The model loads once at startup. The app has no public deployment.
+**Public application:** [https://rmadanmohamed.github.io/brain-tumor-mri-ai-system/](https://rmadanmohamed.github.io/brain-tumor-mri-ai-system/)
+
+The public GitHub Pages demo runs the converted original trained model in the browser using ONNX Runtime Web. Uploaded images are processed locally in the visitor's browser. The original Python application remains available for local use at `http://127.0.0.1:7860`.
 
 ## Medical Disclaimer
 This project is for educational and portfolio demonstration only. It is not a medical diagnosis tool and should not be used for clinical decisions. The repository does not include independently verified clinical validation results.
@@ -133,7 +137,7 @@ The HTML, CSS, and JavaScript workspace is served from the same Python process a
 
 The Dockerfile configures a Hugging Face Docker Space on port 7860 using Python 3.12. It installs requirements-space.txt and copies only the application, web assets, and original HDF5 model. The public container disables /classic to avoid its upload cache. The .dockerignore excludes local datasets, archives, logs, research files, and virtual environments. Paths are portable and MRI_HOST binds the public container.
 
-The Docker image and public Space have not been built or launched here. Verify permission to distribute the trained model and generated illustration before publishing. Deployment awaits local acceptance and explicit approval.
+GitHub Pages hosts a separate static browser deployment on the `browser-deployment` branch. It runs a converted copy of the original trained model with ONNX Runtime Web; the original Python app, Docker configuration, and HDF5 model remain in the main branch for independent local execution.
 
 ## Motion experience
 
