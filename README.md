@@ -70,7 +70,8 @@ The notebooks include classification reports, confusion-matrix code, training ac
 Use 64-bit CPython 3.12 on Windows. The verified interpreter was 3.12.4. From PowerShell, create an environment if needed and invoke that environment explicitly.
 
 ```powershell
-Set-Location 'D:\projects\brain-tumor-mri-ai-system'
+git clone https://github.com/Rmadanmohamed/brain-tumor-mri-ai-system.git
+Set-Location brain-tumor-mri-ai-system
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m pip check
@@ -87,7 +88,7 @@ Run the regression suite in a second PowerShell window from the project root.
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
-.\.venv\Scripts\python.exe tools\validate_demo.py
+.\.venv\Scripts\python.exe tools\validate_demo.py --url http://127.0.0.1:7860/classic
 ```
 
 The second command requires a running server and local JPEGs under `dataset/Testing/<class>` or an explicit `--sample PATH`. It compares direct and served scores and exercises failed uploads. To reproduce the historical failure with the pinned reader, run `tools\diagnose_model.py` using the same interpreter. Its final native HDF5 load intentionally raises the original exception.
@@ -118,13 +119,6 @@ Local validation covers the web API and preserved Gradio classification entry po
 - Model performance must be rerun and documented before any accuracy claim is made.
 - The historical Gradio notebook reverses the final two display labels. Use the verified mapping in the local app. The API and segmentation notebooks are historical experiments.
 - Free deployment may be limited by TensorFlow package size and memory.
-
-## Author
-Ramadan Mohamed Hassan
-
-- GitHub: https://github.com/Rmadanmohamed
-- LinkedIn: https://www.linkedin.com/in/ramadan-mohamed-89085a366/
-- Portfolio: https://ramadan-ai-portfolio.vercel.app
 
 
 ## Web workspace and Windows launch
