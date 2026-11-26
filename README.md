@@ -123,7 +123,7 @@ Local validation covers the web API and preserved Gradio classification entry po
 Ramadan Mohamed Hassan
 
 - GitHub: https://github.com/Rmadanmohamed
-- LinkedIn: https://www.linkedin.com/in/ramadan-mohamed-657686365
+- LinkedIn: https://www.linkedin.com/in/ramadan-mohamed-89085a366/
 - Portfolio: https://ramadan-ai-portfolio.vercel.app
 
 
@@ -142,3 +142,74 @@ GitHub Pages hosts a separate static browser deployment on the `browser-deployme
 ## Motion experience
 
 The frontend uses CSS and browser animation APIs for the entrance, hero image study, scan accents, navigation, scroll progress, process drawing, and results. The preview scanner runs only while the actual inference request is active. Probability bars and counts animate only toward the four returned model values. Reduced motion preferences disable decorative movement and show final values immediately. The illustration is a decorative rendering and is labeled accordingly.
+
+
+## Technical reference and reproducibility
+
+### Verified dependency pins
+
+| Runtime or library | Version |
+|---|---|
+| Python (Docker base) | 3.12-slim |
+| TensorFlow | 2.21.0 |
+| Keras | 3.14.1 |
+| NumPy | 2.4.6 |
+| h5py | 3.14.0 |
+| Pillow | 12.2.0 |
+| FastAPI | 0.136.3 |
+| Uvicorn | 0.49.0 |
+| Gradio | 6.17.3 |
+
+See requirements.txt and requirements-space.txt for the full pinned environments. The original HDF5 model is bundled; CPU inference is the intended baseline. Historical training and segmentation notebooks use additional dependencies and datasets not fully pinned by the application environment.
+
+### Local setup from a fresh clone (Linux/macOS)
+
+```bash
+git clone https://github.com/Rmadanmohamed/brain-tumor-mri-ai-system.git
+cd brain-tumor-mri-ai-system
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python app.py
+```
+
+On Windows PowerShell use `py -3.12 -m venv .venv` and `.\\.venv\\Scripts\\Activate.ps1` before installing. The application serves the main interface at http://127.0.0.1:7860 and the optional Gradio interface at /classic. Platform-specific dependency installation has not been retested in this documentation pass.
+
+### Configuration
+
+| Variable | Required | Default / purpose |
+|---|---|---|
+| MRI_HOST | No | 127.0.0.1; server bind address |
+| GRADIO_SERVER_PORT | No | 7860; HTTP port |
+| MRI_CLASSIC | No | 1; set 0 to disable the classic Gradio interface |
+
+No external API credentials are required by the local inference application. The Docker configuration binds 0.0.0.0 and disables the classic interface.
+
+### API usage
+
+```bash
+curl http://127.0.0.1:7860/api/health
+curl -X POST http://127.0.0.1:7860/api/predict \\
+  -H 'Content-Type: image/jpeg' --data-binary @YOUR_MRI_IMAGE.jpg
+```
+
+Replace the placeholder with a local JPEG; PNG is also accepted with its corresponding media type. Health returns app and ready fields. Prediction returns classification and scores (four class scores). The body is raw image bytes, not multipart JSON. Invalid content, oversized input, unavailable model and failed inference are handled by HTTP error responses. Limits: 10 MiB and 16 million pixels.
+
+### Model and dataset evidence
+
+The application loads the saved Keras HDF5 classifier, applies RGB conversion, nearest-neighbor resizing to 224 × 224 and normalization by 255, then maps outputs to glioma, meningioma, no tumor and pituitary. The training notebook uses MobileNet, Adam (learning rate 0.0001) and categorical cross-entropy; the original dataset ZIP is not bundled. The segmentation notebook is a separate U-Net experiment using combined BCE/Dice loss and IoU evaluation; it is not the deployed classifier. No independently verified test-set metric was established from saved notebook outputs during this audit. Dataset provenance, licensing and complete split reproducibility remain outstanding.
+
+### Validation scope
+
+```bash
+python -m unittest discover -s tests -v
+python tools/validate_demo.py --url http://127.0.0.1:7860/classic
+```
+
+The classifier suite checks the saved model, preprocessing, output dimensions, invalid inputs and repeatability; the sample-image test is conditional on local dataset availability. The demo-validation script requires the running classic interface and local test images. The tests were inspected, not executed during this documentation audit. The browser-deployment branch contains the ONNX artifact, browser runtime and static UI; the public GitHub Pages URL could not be independently loaded during this audit, so live availability is not asserted.
+
+## Author
+
+Ramadan Mohamed Hassan — AI Engineer | AI Researcher | AI Automation | LLM & RAG Systems | Machine Learning
+
+[Portfolio](https://ramadan-ai-portfolio.vercel.app/) · [LinkedIn](https://www.linkedin.com/in/ramadan-mohamed-89085a366/) · [GitHub](https://github.com/Rmadanmohamed) · [Email](mailto:ramadanmohameddd3@gmail.com)
